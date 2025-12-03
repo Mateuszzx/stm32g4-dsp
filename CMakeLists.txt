@@ -47,10 +47,11 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
 )
 
-# Add include paths
+# # Add include paths
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
-    ${CMAKE_SOURCE_DIR}/include
-    # Add user defined include paths
+${CMAKE_SOURCE_DIR}/include
+${CMAKE_SOURCE_DIR}/src
+# Add user defined include paths
 )
 
 # Add project symbols (macros)
@@ -61,8 +62,8 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 # Remove wrong libob.a library dependency when using cpp files
 list(REMOVE_ITEM CMAKE_C_IMPLICIT_LINK_LIBRARIES ob)
 
-# Add linked libraries
-target_link_libraries(${CMAKE_PROJECT_NAME}
+# Add linked libraries (use keyword form to avoid mixing plain/keyword signatures)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
     stm32cubemx
 
     # Add user defined libraries

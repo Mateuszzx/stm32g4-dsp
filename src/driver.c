@@ -1,40 +1,29 @@
 #include "driver.h"
 #include "arm_math.h"
-#include "cmsis_os2.h"
-#include <stdint.h>
+#include "sine_generator.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include <stdio.h>
 
-#define BLOCK_SIZE 5
-
-uint32_t inputA_int[BLOCK_SIZE] = {2043, 1023, 990, 67, 3031};
-uint32_t outputA_int[BLOCK_SIZE];
-q31_t sensor_data_q31[BLOCK_SIZE];
-float32_t inputA[BLOCK_SIZE];
-float32_t outputA[BLOCK_SIZE];
+#define SIGNAL_FREQUENCY 10
+#define SAMPLE_RATE      1000
+sine_generator_q15_t sine_gen;
+q15_t sample;
+float32_t float_sample;
 
 
 void driver_init(void) {
     // Initialization code for the driver
-    for(uint8_t i = 0; i < BLOCK_SIZE; i++) {
-        inputA[i] = ((float32_t)(inputA_int[i] & 0xFFF)/(0xFFF/2)) - 1;
-    }
-    arm_float_to_q31(inputA, sensor_data_q31, BLOCK_SIZE);
-
-    // Perform DSP operation: Q31 to Float conversion
-    arm_q31_to_float(sensor_data_q31, outputA, BLOCK_SIZE);
+    sine_generator_q15_t sine;
+    sine_gen_init_q15(&sine, SAMPLE_RATE, SIGNAL_FREQUENCY);
     
-    float32_t temp;
-
-    for(uint8_t i = 0; i < BLOCK_SIZE; i++) {
-        temp = (outputA[i] + 1) * (0xFFF/2);
-        outputA_int[i] = (uint32_t)(temp + 0.5f)+1;
-        // Round to the nearest integer
-
-    }
-
 
 }
 
 void driver_loop(void) {
     // Main loop code for the driver
-    osDelay(1);
+    sample = sine_calc_sample_q15(&sine_gen);
+    arm_q15_to_float(&sample, &float_sample, 1);
+    
+    printf("%f", float_sample);
 }
