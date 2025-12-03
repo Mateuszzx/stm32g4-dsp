@@ -79,6 +79,13 @@ int _write(int file, char *ptr, int len)
     if (len <= 0)
         return 0;
 
+    /* Safety: if semaphores not created yet, use blocking HAL */
+    if (uartTxMutex == NULL || uartTxDoneSem == NULL)
+    {
+        HAL_UART_Transmit(&hlpuart1, (const uint8_t *)ptr, (uint16_t)len, HAL_MAX_DELAY);
+        return len;
+    }
+
     /* Safety: if scheduler not running or in ISR, use blocking HAL instead */
     if (xTaskGetSchedulerState() != taskSCHEDULER_RUNNING)
     {

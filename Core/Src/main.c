@@ -93,7 +93,7 @@ int main(void)
   MX_DMA_Init();
   MX_LPUART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  driver_init(); // Call the driver initialization function
+  /* driver_init moved after osKernelInitialize - DO NOT MOVE BACK */
   /* USER CODE END 2 */
 
   /* Init scheduler */
