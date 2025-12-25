@@ -61,18 +61,3 @@ q15_t sine_calc_sample_q15(sine_generator_q15_t *sine)
     
     return output;
 }
-
-
-/** Example Usage: **/
-
-// void driver_init(void) {
-//     UartDriver_Init();
-//     sine_gen_init_q15(&sine_gen, SAMPLE_RATE, SIGNAL_FREQUENCY);
-    
-
-// }
-
-// void driver_loop(void) {
-//     sample = sine_calc_sample_q15(&sine_gen);
-//     printf(">Sample:%d\r\n", (int)sample);
-// }

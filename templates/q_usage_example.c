@@ -9,7 +9,9 @@ uint32_t uint32_out_sensor_data[BLOCK_SIZE];
 
 
 void Q_pipeline(void) {
+    
     // Convert uint32_t input data to float32_t in range [-1, 1]
+    
     for(uint8_t i = 0; i < BLOCK_SIZE; i++) {
         float32_in_sensor_data[i] = ((float32_t)(uint32_in_sensor_data[i] & 0xFFF)/(0xFFF/2)) - 1;
     }
@@ -22,6 +24,7 @@ void Q_pipeline(void) {
     // .
     // .
     // Q31 to Float conversion
+
     arm_q31_to_float(q31_sensor_data, float32_out_sensor_data, BLOCK_SIZE);
     
     // Convert float32_t output data back to uint32_t format

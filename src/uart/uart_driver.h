@@ -5,13 +5,21 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 
+
+/**
+ * @brief Initialize the UART driver.
+ * 
+ */
 void UartDriver_Init(void);
 
 /**
- * Send data over LPUART1 using DMA.
- * - Safe to call from multiple tasks (internally uses a mutex).
- * - BLOCKS the calling task until TX complete.
- */
+* @brief Write data to LPUART1 using DMA.
+* 
+* @param data Pointer to the data buffer to send.
+* @param len Length of the data to send.
+* @return int Returns 0 on success, or a negative error code on failure.
+*/
 int UartDriver_Write(const uint8_t *data, uint16_t len);
+
 
 #endif // UART_DRIVER_H

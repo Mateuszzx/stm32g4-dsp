@@ -1,31 +1,52 @@
-#include "driver.h"
-#include "arm_math.h"
-#include "sine_generator.h"
-#include "uart_driver.h"
-#include "FreeRTOS.h"
-#include "task.h"
 #include <stdio.h>
 #include <sys/types.h>
+#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
+#include "arm_math.h"
 
+#include "driver.h"
+#include "acquisition_task.h"
+#include "signal_processing_task.h"
+#include "display_task.h"
+
+
+#define NOISE_FREQUENCY 50
 #define SIGNAL_FREQUENCY 10
 #define SAMPLE_RATE      1000
-sine_generator_q15_t sine_gen;
-q15_t sample;
-float32_t float_sample;
-uint32_t sample_rate = SAMPLE_RATE;
 
-void driver_init(void) {
+
+void Driver_Init(AppContext *ctx) {
     // Initialization code for the driver
-    UartDriver_Init();
-    sine_gen_init_q15(&sine_gen, SAMPLE_RATE, SIGNAL_FREQUENCY);
     
-
+    if (ctx != NULL) {
+        ctx->acquisition_sem = xSemaphoreCreateBinary();
+    }
 }
 
-void driver_loop(void) {
-    // Main loop code for the driver
-    sample = sine_calc_sample_q15(&sine_gen);
-    
-    printf(">Sample:%d\r\n", (int)sample);
+void Driver_StartTasks(AppContext *ctx)
+{
+    // Start acqusition task
+    xTaskCreate(AcquisitionTask,
+                "AcquisitionTask",
+                TASK_ACQUISITION_STACK_SIZE,
+                (void*)ctx,
+                TASK_ACQUISITION_PRIORITY,
+                NULL);
+        
+    xTaskCreate(SignalProcessingTask,
+                "SignalProcessingTask",
+                TASK_SIGNAL_PROCESSING_STACK_SIZE,
+                (void*)ctx,
+                TASK_SIGNAL_PROCESSING_PRIORITY,
+                NULL);
+                
+    xTaskCreate(DisplayTask,
+                "DisplayTask",
+                TASK_DISPLAY_STACK_SIZE,
+                (void*)ctx,
+                TASK_DISPLAY_PRIORITY,
+                NULL);
+                
 
 }

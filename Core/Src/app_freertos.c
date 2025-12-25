@@ -45,7 +45,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
+AppContext app_context;
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
@@ -71,7 +71,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
   */
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-
+  Driver_Init(&app_context);
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -114,11 +114,15 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
-  driver_init();
+  Driver_StartTasks(&app_context);
+
+  // Kill Default Task
+  vTaskDelete(NULL);
+
   /* Infinite loop */
   for(;;)
   {
-    driver_loop();
+    osDelay(1000);
   }
   /* USER CODE END StartDefaultTask */
 }
