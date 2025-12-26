@@ -14,10 +14,10 @@ void SignalProcessingTask(void *params)
     }
     
     LowpassFIR_Init();
-
     while (1)
     {
         if (xSemaphoreTake(ctx->acquisition_sem, portMAX_DELAY) == pdTRUE) {
+            
             LowpassFIR_Execute(&(ctx->signal), &(ctx->filtered_signal), 1);
         }
         xSemaphoreGive(ctx->acquisition_sem);
