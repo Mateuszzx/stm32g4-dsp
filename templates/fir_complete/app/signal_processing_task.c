@@ -11,22 +11,14 @@
 static float32_t fifo_buffer[FIFO_SIZE];
 static float32_t input_block[BLOCK_SIZE];
 static float32_t output_block[BLOCK_SIZE];
-static uint32_t index_block[BLOCK_SIZE];
-
-// Accumulation buffers for display
-static float32_t acc_signal[DISPLAY_BLOCK_SIZE];
-static float32_t acc_filtered[DISPLAY_BLOCK_SIZE];
-static uint32_t acc_index[DISPLAY_BLOCK_SIZE];
-static uint32_t acc_count = 0;
 
 static FIFO_t adc_fifo;
 static TaskHandle_t signalProcessingTaskHandle = NULL;
-static uint32_t index_counter = 0;
+
 
 void SignalProcessing_Init(void) {
     fifo_init(&adc_fifo, fifo_buffer, FIFO_SIZE);
     LowpassFIR_Init();
-    acc_count = 0;
 }
 
 
@@ -52,34 +44,16 @@ void SignalProcessingTask(void *params)
             // Pop block from FIFO
             for (int i = 0; i < BLOCK_SIZE; i++) {
                 fifo_pop(&adc_fifo, &input_block[i]);
-                index_block[i] = index_counter++;
             }
 
             // Process Block
             LowpassFIR_Execute(input_block, output_block, BLOCK_SIZE);
 
-            // Accumulate for display
-            if (acc_count + BLOCK_SIZE <= DISPLAY_BLOCK_SIZE) {
-                memcpy(&acc_signal[acc_count], input_block, sizeof(float32_t) * BLOCK_SIZE);
-                memcpy(&acc_filtered[acc_count], output_block, sizeof(float32_t) * BLOCK_SIZE);
-                memcpy(&acc_index[acc_count], index_block, sizeof(uint32_t) * BLOCK_SIZE);
-                acc_count += BLOCK_SIZE;
-            }
-
-            // If accumulation buffer is full, update shared context
-            if (acc_count >= DISPLAY_BLOCK_SIZE) {
-                if (xSemaphoreTake(ctx->semaphor, portMAX_DELAY) == pdTRUE) {
-                    memcpy(ctx->signal_buffer, acc_signal, sizeof(float32_t) * DISPLAY_BLOCK_SIZE);
-                    memcpy(ctx->filtered_buffer, acc_filtered, sizeof(float32_t) * DISPLAY_BLOCK_SIZE);
-                    memcpy(ctx->index_buffer, acc_index, sizeof(uint32_t) * DISPLAY_BLOCK_SIZE);
-                    xSemaphoreGive(ctx->semaphor);
-                    
-                    // Notify DisplayTask that new data is available
-                    if (ctx->data_ready_sem != NULL) {
-                        xSemaphoreGive(ctx->data_ready_sem);
-                    }
-                }
-                acc_count = 0; // Reset accumulation
+            // Update shared context
+            if (xSemaphoreTake(ctx->semaphor, 0) == pdTRUE) {
+                memcpy(ctx->signal_buffer, input_block, sizeof(float32_t) * BLOCK_SIZE);
+                memcpy(ctx->filtered_buffer, output_block, sizeof(float32_t) * BLOCK_SIZE);
+                xSemaphoreGive(ctx->semaphor);
             }
         }
     }

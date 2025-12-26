@@ -1,7 +1,6 @@
 # Add component sources directly to the main executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    fir_filter.c
-    lowpass_fir.c
+    # moving_average.c
 )
 
 # Add the component directory for includes

@@ -22,13 +22,4 @@ void ADC_StopDMA(void) {
     HAL_ADC_Stop_DMA(&hadc1);
 }
 
-/* 
-// NOTE: Implement HAL_ADC_ConvCpltCallback in your application (e.g., main.c or acquisition_task.c)
-// to handle the conversion complete interrupt.
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc) {
-    if (hadc->Instance == ADC1) {
-        // User code here
-    }
-}
-*/
 

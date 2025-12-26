@@ -1,6 +1,6 @@
 # Add component sources directly to the main executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    acquisition_task.c
+    acquisition.c
     display_task.c
     signal_processing_task.c
 )

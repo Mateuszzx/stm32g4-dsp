@@ -23,7 +23,6 @@ void Driver_Init(AppContext *ctx) {
     
     if (ctx != NULL) {
         ctx->semaphor = xSemaphoreCreateBinary();
-        ctx->data_ready_sem = xSemaphoreCreateBinary();
     }
 }
 

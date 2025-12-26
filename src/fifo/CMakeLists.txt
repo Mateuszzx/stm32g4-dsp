@@ -1,6 +1,6 @@
 # Add component sources directly to the main executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    timer.c
+    fifo.c
 )
 
 # Add the component directory for includes
