@@ -3,8 +3,8 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy.signal import iirfilter, sosfreqz, freqz
 
-from filter_types import FilterTypes, _validate_cutoff
-from save_to_c import c_array
+from tools.filter_types import FilterTypes, _validate_cutoff
+from tools.save_to_c import c_array
 
 
 class IIRDesignMethods(Enum):

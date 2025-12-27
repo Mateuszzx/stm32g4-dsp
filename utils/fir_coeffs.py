@@ -3,8 +3,8 @@ import numpy as np
 from numpy.typing import NDArray
 from scipy.signal import firwin, firwin2, firls, remez, savgol_coeffs
 
-from filter_types import FilterTypes, WindowTypes, build_band_spec
-from save_to_c import c_array
+from tools.filter_types import FilterTypes, WindowTypes, build_band_spec
+from tools.save_to_c import c_array
 
 
 class FIRDesignMethods(Enum):
