@@ -1,6 +1,6 @@
 # Add component sources directly to the main executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    # moving_average.c
+    moving_average.c
 )
 
 # Add the component directory for includes

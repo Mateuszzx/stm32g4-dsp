@@ -1,9 +1,7 @@
 #include "acquisition.h"
 #include "signal_processing_task.h"
 
-#define DMA_BUFFER_SIZE 64 // 2 blocks of 32
-#define ADC_MAX_VALUE 4095.0f
-#define ADC_REF_VOLTAGE 3.3f
+
 
 static uint16_t adc_dma_buffer[DMA_BUFFER_SIZE];
 

@@ -22,8 +22,14 @@ void Driver_Init(AppContext *ctx) {
     // Initialization code for the driver
     
     if (ctx != NULL) {
-        ctx->semaphor = xSemaphoreCreateBinary();
-        ctx->data_ready_sem = xSemaphoreCreateBinary();
+        // Create a queue based on the selected mode
+        #if DISPLAY_QUEUE_BLOCKING_MODE
+            // Blocking mode: Buffer up to 10 frames to handle bursts
+            ctx->display_queue = xQueueCreate(10, sizeof(DisplayData_t));
+        #else
+            // Mailbox mode: Only keep the latest frame (Length 1)
+            ctx->display_queue = xQueueCreate(1, sizeof(DisplayData_t));
+        #endif
     }
 }
 

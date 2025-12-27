@@ -1,6 +1,7 @@
 #include "signal_processing_task.h"
 #include "driver.h"
 #include "lowpass_fir.h"
+#include "moving_average.h"
 #include "fifo.h"
 #include "task.h"
 
@@ -9,14 +10,9 @@
 #define BLOCK_SIZE DSP_BLOCK_SIZE
 
 static float32_t fifo_buffer[FIFO_SIZE];
-static float32_t input_block[BLOCK_SIZE];
-static float32_t output_block[BLOCK_SIZE];
-static uint32_t index_block[BLOCK_SIZE];
 
-// Accumulation buffers for display
-static float32_t acc_signal[DISPLAY_BLOCK_SIZE];
-static float32_t acc_filtered[DISPLAY_BLOCK_SIZE];
-static uint32_t acc_index[DISPLAY_BLOCK_SIZE];
+// Accumulation buffer for display
+static DisplayData_t display_data;
 static uint32_t acc_count = 0;
 
 static FIFO_t adc_fifo;
@@ -25,7 +21,7 @@ static uint32_t index_counter = 0;
 
 void SignalProcessing_Init(void) {
     fifo_init(&adc_fifo, fifo_buffer, FIFO_SIZE);
-    LowpassFIR_Init();
+    // LowpassFIR_Init();
     acc_count = 0;
 }
 
@@ -33,14 +29,13 @@ void SignalProcessing_Init(void) {
 void SignalProcessingTask(void *params)
 {
     AppContext *ctx = (AppContext *)params;
-    if (ctx == NULL ||  ctx->semaphor == NULL)
+    if (ctx == NULL ||  ctx->display_queue == NULL)
     {
         vTaskDelete(NULL);
         return;
     }
     
     signalProcessingTaskHandle = xTaskGetCurrentTaskHandle();
-    xSemaphoreGive(ctx->semaphor);
 
     while (1)
     {
@@ -49,36 +44,36 @@ void SignalProcessingTask(void *params)
 
         // Check if we have enough data for a block
         while (fifo_count(&adc_fifo) >= BLOCK_SIZE) {
-            // Pop block from FIFO
+            
+            // Safety check to prevent buffer overflow
+            if (acc_count + BLOCK_SIZE > DISPLAY_BLOCK_SIZE) {
+                acc_count = 0;
+            }
+
+            // Pop block from FIFO directly to accumulation buffer
             for (int i = 0; i < BLOCK_SIZE; i++) {
-                fifo_pop(&adc_fifo, &input_block[i]);
-                index_block[i] = index_counter++;
+                fifo_pop(&adc_fifo, &(display_data.signal_buffer[acc_count + i]));
+                display_data.index_buffer[acc_count + i] = index_counter++;
             }
 
             // Process Block
-            LowpassFIR_Execute(input_block, output_block, BLOCK_SIZE);
+            // LowpassFIR_Execute(&display_data.signal_buffer[acc_count], &display_data.filtered_buffer[acc_count], BLOCK_SIZE);
+            moving_average(&(display_data.signal_buffer[acc_count]), &(display_data.filtered_buffer[acc_count]), BLOCK_SIZE, 5);
 
-            // Accumulate for display
-            if (acc_count + BLOCK_SIZE <= DISPLAY_BLOCK_SIZE) {
-                memcpy(&acc_signal[acc_count], input_block, sizeof(float32_t) * BLOCK_SIZE);
-                memcpy(&acc_filtered[acc_count], output_block, sizeof(float32_t) * BLOCK_SIZE);
-                memcpy(&acc_index[acc_count], index_block, sizeof(uint32_t) * BLOCK_SIZE);
-                acc_count += BLOCK_SIZE;
-            }
+            acc_count += BLOCK_SIZE;
 
-            // If accumulation buffer is full, update shared context
+            // If accumulation buffer is full, send to queue
             if (acc_count >= DISPLAY_BLOCK_SIZE) {
-                if (xSemaphoreTake(ctx->semaphor, portMAX_DELAY) == pdTRUE) {
-                    memcpy(ctx->signal_buffer, acc_signal, sizeof(float32_t) * DISPLAY_BLOCK_SIZE);
-                    memcpy(ctx->filtered_buffer, acc_filtered, sizeof(float32_t) * DISPLAY_BLOCK_SIZE);
-                    memcpy(ctx->index_buffer, acc_index, sizeof(uint32_t) * DISPLAY_BLOCK_SIZE);
-                    xSemaphoreGive(ctx->semaphor);
-                    
-                    // Notify DisplayTask that new data is available
-                    if (ctx->data_ready_sem != NULL) {
-                        xSemaphoreGive(ctx->data_ready_sem);
-                    }
-                }
+                
+                // Send to queue based on mode
+                #if DISPLAY_QUEUE_BLOCKING_MODE
+                    // Blocking: Wait until space is available (guarantees data delivery)
+                    xQueueSend(ctx->display_queue, &display_data, portMAX_DELAY);
+                #else
+                    // Mailbox: Overwrite with newest data (guarantees latest data, may skip)
+                    xQueueOverwrite(ctx->display_queue, &display_data);
+                #endif
+                
                 acc_count = 0; // Reset accumulation
             }
         }
