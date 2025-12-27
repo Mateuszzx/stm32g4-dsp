@@ -1,6 +1,6 @@
 #include "signal_processing_task.h"
 #include "driver.h"
-#include "lowpass_fir.h"
+#include "lowpass_iir.h"
 #include "moving_average.h"
 #include "fifo.h"
 #include "task.h"
@@ -19,12 +19,17 @@ static FIFO_t adc_fifo;
 static TaskHandle_t signalProcessingTaskHandle = NULL;
 static uint32_t index_counter = 0;
 
-void SignalProcessing_Init(void) {
+
+
+void SignalProcessing_Init(void)
+{
     fifo_init(&adc_fifo, fifo_buffer, FIFO_SIZE);
+    
     // LowpassFIR_Init();
+    LowpassIIR_Init();
+
     acc_count = 0;
 }
-
 
 void SignalProcessingTask(void *params)
 {
@@ -57,8 +62,12 @@ void SignalProcessingTask(void *params)
             }
 
             // Process Block
+            /* FIR*/
             // LowpassFIR_Execute(&display_data.signal_buffer[acc_count], &display_data.filtered_buffer[acc_count], BLOCK_SIZE);
-            moving_average(&(display_data.signal_buffer[acc_count]), &(display_data.filtered_buffer[acc_count]), BLOCK_SIZE, 5);
+            /* Moving Average*/
+            // moving_average(&(display_data.signal_buffer[acc_count]), &(display_data.filtered_buffer[acc_count]), BLOCK_SIZE, 5);
+            /* IIR */
+            LowpassIIR_Execute(&display_data.signal_buffer[acc_count], &display_data.filtered_buffer[acc_count], BLOCK_SIZE);
 
             acc_count += BLOCK_SIZE;
 
@@ -82,13 +91,15 @@ void SignalProcessingTask(void *params)
 
 
 // Callback called from Acquisition ISR logic
-void Acquisition_ISR_Callback(float32_t sample) {
+void Acquisition_ISR_Callback(float32_t sample)
+{
     // Push to FIFO
     fifo_push(&adc_fifo, sample);
 }
 
 
-void SignalProcessing_NotifyFromISR(void) {
+void SignalProcessing_NotifyFromISR(void)
+{
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     if (signalProcessingTaskHandle != NULL) {
         vTaskNotifyGiveFromISR(signalProcessingTaskHandle, &xHigherPriorityTaskWoken);

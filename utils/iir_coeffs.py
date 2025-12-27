@@ -23,13 +23,14 @@ class IIROutputFormat(Enum):
 #######################################################################################
 filter_type = FilterTypes.LOWPASS # Filter type: LOWPASS, HIGHPASS, BANDPASS, BANDSTOP
 design_method = IIRDesignMethods.BUTTER # Design method
-order = 3
+num_stages = 3 # Number of biquad stages
+order = 2 * num_stages # Calculate order based on stages (2 poles per stage)
 fs = 1000  # Sampling frequency
 cutoff = 50  # Cutoff frequency (scalar for LP/HP, tuple for BP/BS)
 rp = 1.0   # Passband ripple in dB (for cheby1, ellip)
 rs = 40.0  # Stopband attenuation in dB (for cheby2, ellip)
-# output_format = IIROutputFormat.SOS # Output format: SOS (Second-Order Sections) or BA (Numerator/Denominator)
-output_format = IIROutputFormat.BA # Output format: SOS (Second-Order Sections) or BA (Numerator/Denominator)
+output_format = IIROutputFormat.SOS # Output format: SOS (Second-Order Sections) or BA (Numerator/Denominator)
+# output_format = IIROutputFormat.BA # Output format: SOS (Second-Order Sections) or BA (Numerator/Denominator)
 #######################################################################################
 
 def iir_design(method: IIRDesignMethods,
@@ -85,10 +86,29 @@ if __name__ == "__main__":
         ax_time.grid()
 
         if output_format == IIROutputFormat.SOS:
-            print(f"SOS shape: {coeffs.shape}")
+            print(f"#define IIR_NUM_STAGES {len(coeffs)}")
             # Flatten for C array
             flat_sos = coeffs.flatten()
-            print(c_array("iir_sos_coeffs", flat_sos, "float"))
+            # print(c_array("iir_sos_coeffs", flat_sos, "float"))
+
+            # Generate ARM CMSIS-DSP specific format
+            # Order: {b10, b11, b12, a11, a12, b20, b21, b22, a21, a22, ...}
+            # where a coefficients are negated.
+            arm_coeffs = []
+            for section in coeffs:
+                b0, b1, b2, a0, a1, a2 = section
+                # Normalize by a0 if it's not 1.0 (though scipy usually returns a0=1.0)
+                if a0 != 1.0:
+                    b0 /= a0
+                    b1 /= a0
+                    b2 /= a0
+                    a1 /= a0
+                    a2 /= a0
+                
+                # Append in ARM order: b0, b1, b2, -a1, -a2
+                arm_coeffs.extend([b0, b1, b2, -a1, -a2])
+            
+            print(c_array("lowpass_coeffs", np.array(arm_coeffs), "float32_t"))
             
             # Frequency Response
             w, h = sosfreqz(coeffs, worN=2048, fs=fs)
