@@ -5,7 +5,7 @@
 #include <string.h>
 
 // Move large buffers to static memory to prevent stack overflow
-static char tx_buf[256];
+static char tx_buf[2*256];
 
 void DisplayTask(void *params)
 {
@@ -49,5 +49,6 @@ void DisplayTask(void *params)
                 UartDriver_Write((uint8_t*)tx_buf, tx_len);
             }
         }
+        vTaskDelay(pdMS_TO_TICKS(10)); // Small delay to yield CPU
     }
 }

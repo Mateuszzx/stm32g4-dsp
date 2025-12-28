@@ -18,7 +18,7 @@ void DisplayTask(void *params)
     
     UartDriver_Init(); // Initialize UART for display output
     
-    DisplayData_t data;
+    static DisplayData_t data;
     int tx_len = 0;
 
     while (1)
@@ -28,11 +28,14 @@ void DisplayTask(void *params)
             
             tx_len = 0;
             for(int i=0; i<DISPLAY_BLOCK_SIZE; i++) {
-                char line_buf[64];
-                int line_len = snprintf(line_buf, sizeof(line_buf), "%lu,%.4f,%.4f\r\n", 
+                char line_buf[80];
+                float fft_val = (i < DISPLAY_BLOCK_SIZE/2) ? data.fft_buffer[i] : 0.0f;
+                
+                int line_len = snprintf(line_buf, sizeof(line_buf), "%lu,%.4f,%.4f,%.4f\r\n", 
                                       data.index_buffer[i], 
                                       data.signal_buffer[i], 
-                                      data.filtered_buffer[i]);
+                                      data.filtered_buffer[i],
+                                      fft_val);
                 
                 if (line_len <= 0) continue;
 

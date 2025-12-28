@@ -3,7 +3,7 @@
 
 #include "adc.h"
 
-#define DMA_BUFFER_SIZE 128 // 2 blocks of 32 samples each
+#define DMA_BUFFER_SIZE 256 // 2 blocks of 32 samples each
 #define ADC_MAX_VALUE 4095.0f
 #define ADC_REF_VOLTAGE 3.3f
 

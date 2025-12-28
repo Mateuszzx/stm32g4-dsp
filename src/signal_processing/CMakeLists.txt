@@ -1,10 +1,17 @@
 # Options to enable/disable specific DSP modules
-option(DSP_ENABLE_ADAPTIVE_FILTERS "Enable Adaptive Filters" ON)
-option(DSP_ENABLE_FIR "Enable FIR Filters" ON)
+
+option(DSP_ENABLE_ADAPTIVE_FILTERS "Enable Adaptive Filters" OFF)
+option(DSP_ENABLE_FIR "Enable FIR Filters" OFF)
 option(DSP_ENABLE_IIR "Enable IIR Filters" ON)
-option(DSP_ENABLE_MOVING_AVERAGE "Enable Moving Average Filters" ON)
-option(DSP_ENABLE_STATISTICS "Enable Statistics Calculation" ON)
+option(DSP_ENABLE_MOVING_AVERAGE "Enable Moving Average Filters" OFF)
+option(DSP_ENABLE_STATISTICS "Enable Statistics Calculation" OFF)
 option(DSP_ENABLE_WAVEFORM_GENERATOR "Enable Waveform Generator" ON)
+option(DSP_ENABLE_FFT "Enable FFT Module" ON)
+
+
+if(DSP_ENABLE_FFT AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/fft/CMakeLists.txt)
+    add_subdirectory(fft)
+endif()
 
 if(DSP_ENABLE_ADAPTIVE_FILTERS AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/adaptive_filters/CMakeLists.txt)
     add_subdirectory(adaptive_filters)

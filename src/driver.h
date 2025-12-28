@@ -11,14 +11,14 @@
 #include "acquisition.h"
 
 
-#define TASK_SIGNAL_PROCESSING_STACK_SIZE    256
-#define TASK_DISPLAY_STACK_SIZE              512
+#define TASK_SIGNAL_PROCESSING_STACK_SIZE    1024
+#define TASK_DISPLAY_STACK_SIZE              1024
 
 #define TASK_SIGNAL_PROCESSING_PRIORITY    osPriorityNormal
 #define TASK_DISPLAY_PRIORITY              osPriorityNormal
 
 // Set to 1 for Blocking Queue (Wait for UART), 0 for Mailbox (Overwrite/Skip)
-#define DISPLAY_QUEUE_BLOCKING_MODE 1
+#define DISPLAY_QUEUE_BLOCKING_MODE 0
 
 #define DSP_BLOCK_SIZE 32
 #define DISPLAY_BLOCK_SIZE (uint32_t)(DMA_BUFFER_SIZE/2)
@@ -27,6 +27,7 @@ typedef struct {
     uint32_t index_buffer[DISPLAY_BLOCK_SIZE];
     float32_t signal_buffer[DISPLAY_BLOCK_SIZE];
     float32_t filtered_buffer[DISPLAY_BLOCK_SIZE];
+    float32_t fft_buffer[DISPLAY_BLOCK_SIZE];
 } DisplayData_t;
 
 /**
