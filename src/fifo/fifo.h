@@ -1,3 +1,13 @@
+/**
+ * @file fifo.h
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief FIFO Header
+ * @version 0.1
+ * @date 2025-12-28
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef FIFO_H
 #define FIFO_H
 
@@ -7,6 +17,10 @@
 
 typedef float32_t fifo_data_t; // Define data type for FIFO
 
+/**
+ * @brief FIFO structure
+ * 
+ */
 typedef struct {
     fifo_data_t *buffer;
     uint32_t size;

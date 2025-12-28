@@ -1,5 +1,15 @@
-#ifndef NOSISE_CANCELATION_H
-#define NOSISE_CANCELATION_H
+/**
+ * @file noise_cancelation.h
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief Noise Cancelation Header
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+#ifndef NOISE_CANCELATION_H
+#define NOISE_CANCELATION_H
 
 #include <stdint.h>
 #include "arm_math.h"
@@ -25,4 +35,4 @@ void NoiseCancelation_Execute(float32_t *pInput,
                               uint32_t blockSize);
 
 
-#endif // NOSISE_CANCELATION_H
+#endif // NOISE_CANCELATION_H

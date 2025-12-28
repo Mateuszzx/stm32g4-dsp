@@ -1,3 +1,13 @@
+/**
+ * @file iir_filter.h
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief Generic IIR Filter Header File
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef IIR_FILTER_H
 #define IIR_FILTER_H
 

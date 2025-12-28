@@ -1,8 +1,21 @@
+/**
+ * @file fir_filter.h
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief FIR filter header file
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef FIR_FILTER_H
 #define FIR_FILTER_H
 #include "arm_math.h"
 
-
+/**
+ * @brief FIR filter instance type definition
+ * 
+ */
 typedef arm_fir_instance_f32 fir_instance_t;
 
 /**

@@ -1,7 +1,7 @@
 /**
  * @file sine_generator.c
  * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
- * @brief 
+ * @brief Sine Wave Generator using IIR Biquad Filter in Q15 format
  * @version 0.1
  * @date 2025-12-03
  * 
@@ -11,13 +11,7 @@
 #include "sine_generator.h"
 
 
-/**
- * @brief Initialize the Q15 sine generator
- * 
- * @param sine 
- * @param sample_rate 
- * @param frequency 
- */
+
 void sine_gen_init_q15(sine_generator_q15_t *sine, q15_t sample_rate, q15_t frequency)
 {
     // Calculate normalized frequency
@@ -45,12 +39,7 @@ void sine_gen_init_q15(sine_generator_q15_t *sine, q15_t sample_rate, q15_t freq
     arm_float_to_q15(&y[1], &(sine->state[3]), 1);
 }
 
-/**
- * @brief Calculate a single Q15 sine sample
- * 
- * @param sine 
- * @return q15_t 
- */
+
 q15_t sine_calc_sample_q15(sine_generator_q15_t *sine)
 {
     q15_t output;

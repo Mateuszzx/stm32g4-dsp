@@ -1,3 +1,13 @@
+/**
+ * @file display_task.c
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief Display Task Implementation
+ * @version 0.1
+ * @date 2025-12-28
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #include "display_task.h"
 #include "driver.h"
 #include "uart_driver.h"
@@ -6,6 +16,7 @@
 
 // Move large buffers to static memory to prevent stack overflow
 static char tx_buf[256];
+
 
 void DisplayTask(void *params)
 {

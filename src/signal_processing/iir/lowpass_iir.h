@@ -1,3 +1,13 @@
+/**
+ * @file lowpass_iir.h
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief Lowpass IIR Filter Interface
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef LOWPASS_IIR_H
 #define LOWPASS_IIR_H
 #include "iir_filter.h"

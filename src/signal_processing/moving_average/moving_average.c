@@ -1,3 +1,13 @@
+/**
+ * @file moving_average.c
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief Moving Average Filter Implementation
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #include "moving_average.h"
 #include "arm_math.h"
 

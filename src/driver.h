@@ -1,3 +1,13 @@
+/**
+ * @file driver.h
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief Main Driver Header
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef DRIVER_H
 #define DRIVER_H
 

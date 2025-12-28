@@ -1,3 +1,13 @@
+/**
+ * @file lms_filter.h
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief LMS Adaptive Filter Header
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef LMS_FILTER_H
 #define LMS_FILTER_H
 

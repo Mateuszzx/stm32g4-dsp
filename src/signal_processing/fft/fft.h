@@ -1,11 +1,13 @@
 /**
  * @file fft.h
- * @brief FFT implementation header file using CMSIS-DSP RFFT
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief FFT Header
+ * @version 0.1
+ * @date 2025-12-29
  * 
- * This file contains the definitions and function prototypes for the FFT implementation
- * using the CMSIS-DSP library's Real FFT (RFFT) functions.
+ * @copyright Copyright (c) 2025
+ * 
  */
-
 #ifndef FFT_H
 #define FFT_H
 

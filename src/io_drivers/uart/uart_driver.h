@@ -1,3 +1,13 @@
+/**
+ * @file uart_driver.h
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief UART Driver Header
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef UART_DRIVER_H
 #define UART_DRIVER_H
 

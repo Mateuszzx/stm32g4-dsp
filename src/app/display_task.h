@@ -1,3 +1,13 @@
+/**
+ * @file display_task.h
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief Display Task Header
+ * @version 0.1
+ * @date 2025-12-28
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef DISPLAY_TASK_H
 #define DISPLAY_TASK_H
 

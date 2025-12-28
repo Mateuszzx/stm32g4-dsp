@@ -1,3 +1,13 @@
+/**
+ * @file moving_average.h
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief Moving Average Filter Interface
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef MOVING_AVERAGE_H
 #define MOVING_AVERAGE_H
 #include "arm_math.h"

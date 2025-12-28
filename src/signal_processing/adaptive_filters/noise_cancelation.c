@@ -1,3 +1,13 @@
+/**
+ * @file noise_cancelation.c
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief Noise Cancelation Implementation
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #include "noise_cancelation.h"
 #include "lms_filter.h"
 

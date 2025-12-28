@@ -1,6 +1,12 @@
 /**
  * @file fft.c
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
  * @brief FFT implementation using CMSIS-DSP RFFT
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
  */
 
 #include "fft.h"

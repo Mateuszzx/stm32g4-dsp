@@ -1,3 +1,13 @@
+/**
+ * @file fir_filter.c
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief FIR filter implementation
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #include "fir_filter.h"
 
 
@@ -9,6 +19,7 @@ void FIR_Init(fir_instance_t *filter, int tap_num, const float32_t *pCoeffs, flo
                 pState, 
                 block_size);
 }
+
 
 void FIR_Execute(fir_instance_t *filter, float32_t *input, float32_t *output, uint32_t block_size)
 {

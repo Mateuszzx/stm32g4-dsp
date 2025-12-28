@@ -1,14 +1,17 @@
+/**
+ * @file lowpass_fir.h
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief Lowpass FIR Filter Header File
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #ifndef LOWPASS_FIR_H
 #define LOWPASS_FIR_H
 #include "arm_math.h"
 
-
-#define FILTER_TAP_NUM 31
-#define FILTER_BLOCK_SIZE 32
-
-extern const float32_t filter_kernel[FILTER_TAP_NUM];
-extern float32_t filter_state[FILTER_TAP_NUM + FILTER_BLOCK_SIZE - 1];
-extern arm_fir_instance_f32 filter;
 
 /**
  * @brief Initialize FIR filter 

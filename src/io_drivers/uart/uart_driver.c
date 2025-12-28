@@ -1,11 +1,23 @@
+/**
+ * @file uart_driver.c
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief UART Driver Implementation
+ * @version 0.1
+ * @date 2025-12-28
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
 #include "uart_driver.h"
 #include "usart.h"
 #include <string.h>
 #include <stdbool.h>
-/* ---------- configuration ---------- */
-#define UART_TX_BUF_SIZE 2048   // Increased buffer size for ring buffer
 
-/* ---------- static data ---------- */
+
+#define UART_TX_BUF_SIZE 1024   // Increased buffer size for ring buffer
+
+
+
 static uint8_t uartTxBuf[UART_TX_BUF_SIZE];
 static volatile uint16_t txHead = 0;
 static volatile uint16_t txTail = 0;
@@ -14,7 +26,6 @@ static volatile bool txBusy = false;
 
 static SemaphoreHandle_t uartTxMutex   = NULL;
 
-/* ---------- init ---------- */
 
 void UartDriver_Init(void)
 {
@@ -27,7 +38,10 @@ void UartDriver_Init(void)
     txBusy = false;
 }
 
-/* ---------- internal helper ---------- */
+/**
+ * @brief Start UART transmission if not already in progress
+ * 
+ */
 static void StartTx(void) {
     if (txHead == txTail) {
         txBusy = false;
@@ -46,7 +60,7 @@ static void StartTx(void) {
     HAL_UART_Transmit_DMA(&hlpuart1, &uartTxBuf[txTail], len);
 }
 
-/* ---------- main write function (for tasks) ---------- */
+
 
 int UartDriver_Write(const uint8_t *data, uint16_t len)
 {
@@ -75,8 +89,8 @@ int UartDriver_Write(const uint8_t *data, uint16_t len)
     return (int)len;
 }
 
-/* ---------- HAL callback (from DMA interrupt) ---------- */
 
+// UART TX Complete Callback
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
     if (huart->Instance == LPUART1)
@@ -94,10 +108,15 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 }
 
 
-/* ---------- printf redirection ---------- */
-/* newlib / newlib-nano calls this for printf, puts, etc. */
 
-
+/**
+ * @brief printf redirection to UART
+ * 
+ * @param file File descriptor (unused)
+ * @param ptr Pointer to the data to write
+ * @param len Length of the data to write
+ * @return int Number of bytes written
+ */
 int _write(int file, char *ptr, int len)
 {
     (void)file;  // unused

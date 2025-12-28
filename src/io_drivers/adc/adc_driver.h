@@ -12,12 +12,27 @@ typedef struct {
     bool continuous_mode;     // Continuous conversion mode
 } ADC_Config;
 
+
+/**
+ * @brief Initialize the ADC with the given configuration
+ * 
+ */
 void ADC_Init(const ADC_Config* config);
 
-uint16_t ADC_Read(void);
+
+/**
+ * @brief Start ADC DMA transfer
+ * 
+ * @param buffer Pointer to the buffer to store ADC samples
+ * @param length Number of samples to transfer
+ */
 void ADC_StartDMA(uint16_t *buffer, uint32_t length);
+
+/**
+ * @brief Stop ADC DMA transfer
+ * 
+ */
 void ADC_StopDMA(void);
-void ADC_Deinit(void);
 
 
 #endif // ADC_DRIVER_H

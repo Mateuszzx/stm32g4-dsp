@@ -1,3 +1,14 @@
+/**
+ * @file driver.c
+ * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
+ * @brief Main App Driver Implementation
+ * @version 0.1
+ * @date 2025-12-29
+ * 
+ * @copyright Copyright (c) 2025
+ * 
+ */
+
 #include <stdio.h>
 #include <sys/types.h>
 #include "FreeRTOS.h"
@@ -11,11 +22,6 @@
 #include "display_task.h"
 #include "tim.h"
 #include "adc.h"
-
-
-#define NOISE_FREQUENCY 50
-#define SIGNAL_FREQUENCY 10
-#define SAMPLE_RATE      1000
 
 
 void Driver_Init(AppContext *ctx) {
@@ -35,7 +41,7 @@ void Driver_Init(AppContext *ctx) {
 
 void Driver_StartTasks(AppContext *ctx)
 {        
-    // Initialize Signal Processing resources (FIFO, FIR)
+    // Initialize Signal Processing resources (FIFO, Filter, FFT, etc.)
     SignalProcessing_Init();
 
     xTaskCreate(SignalProcessingTask,

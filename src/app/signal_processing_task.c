@@ -1,7 +1,7 @@
 /**
  * @file signal_processing_task.c
  * @author Mateusz Wójcik (mateuszwojcikv@gmail.com)
- * @brief 
+ * @brief  Signal Processing Task Implementation
  * @version 0.2
  * @date 2025-12-28
  * 
@@ -74,6 +74,65 @@ void SignalProcessing_Init(void)
     acc_count = 0;
 }
 
+/**
+ * @brief Process a single block of data from FIFO
+ * 
+ */
+static void ProcessBlock(void)
+{
+    // Safety check to prevent buffer overflow
+    if (acc_count + BLOCK_SIZE > DISPLAY_BLOCK_SIZE)
+    {
+        acc_count = 0;
+    }
+
+    // Pop block from FIFO directly to accumulation buffer
+    for (int i = 0; i < BLOCK_SIZE; i++)
+    {
+        fifo_pop(&adc_fifo, &(display_data.signal_buffer[acc_count + i]));
+        display_data.index_buffer[acc_count + i] = index_counter++;
+    }
+
+    /* IIR */
+    LowpassIIR_Execute(&display_data.signal_buffer[acc_count], &display_data.filtered_buffer[acc_count], BLOCK_SIZE);
+    
+    // Update accumulation count
+    acc_count += BLOCK_SIZE;
+}
+
+/**
+ * @brief Process FFT on the accumulated data
+ * 
+ */
+static void ProcessFFT(void) {
+    // 1. Apply Window
+    fft_apply_window(display_data.signal_buffer, &fft_window, fft_input_buffer);
+    
+    // 2. Compute FFT
+    fft_compute(&fft_handler, fft_input_buffer, fft_output_buffer);
+    
+    // 3. Calculate Magnitude
+    fft_calculate_magnitude(&fft_handler, fft_output_buffer, display_data.fft_buffer);
+}
+
+/**
+ * @brief Send accumulated data to display queue
+ * 
+ * @param ctx Pointer to application context
+ */
+static void SendToDisplay(AppContext *ctx) {
+     // Send to queue based on mode
+    #if DISPLAY_QUEUE_BLOCKING_MODE
+        // Blocking: Wait until space is available (guarantees data delivery)
+        xQueueSend(ctx->display_queue, &display_data, portMAX_DELAY);
+    #else
+        // Mailbox: Overwrite with newest data (guarantees latest data, may skip)
+        xQueueOverwrite(ctx->display_queue, &display_data);
+    #endif
+    
+    acc_count = 0; // Reset accumulation
+}
+
 void SignalProcessingTask(void *params)
 {
     AppContext *ctx = (AppContext *)params;
@@ -91,53 +150,19 @@ void SignalProcessingTask(void *params)
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
         // Check if we have enough data for a block
-        while (fifo_count(&adc_fifo) >= BLOCK_SIZE) {
-            
-            // Safety check to prevent buffer overflow
-            if (acc_count + BLOCK_SIZE > DISPLAY_BLOCK_SIZE) {
-                acc_count = 0;
-            }
-
-            // Pop block from FIFO directly to accumulation buffer
-            for (int i = 0; i < BLOCK_SIZE; i++) {
-                fifo_pop(&adc_fifo, &(display_data.signal_buffer[acc_count + i]));
-                display_data.index_buffer[acc_count + i] = index_counter++;
-            }
-
-            /* IIR */
-            LowpassIIR_Execute(&display_data.signal_buffer[acc_count], &display_data.filtered_buffer[acc_count], BLOCK_SIZE);
-            
-            // Update accumulation count
-            acc_count += BLOCK_SIZE;
+        while (fifo_count(&adc_fifo) >= BLOCK_SIZE)
+        {    
+            ProcessBlock();
 
             // If accumulation buffer is full, send to queue
-            if (acc_count >= DISPLAY_BLOCK_SIZE) {
-                
-                // Perform FFT
-                // 1. Apply Window
-                fft_apply_window(display_data.signal_buffer, &fft_window, fft_input_buffer);
-                
-                // 2. Compute FFT
-                fft_compute(&fft_handler, fft_input_buffer, fft_output_buffer);
-                
-                // 3. Calculate Magnitude
-                fft_calculate_magnitude(&fft_handler, fft_output_buffer, display_data.fft_buffer);
-
-                // Send to queue based on mode
-                #if DISPLAY_QUEUE_BLOCKING_MODE
-                    // Blocking: Wait until space is available (guarantees data delivery)
-                    xQueueSend(ctx->display_queue, &display_data, portMAX_DELAY);
-                #else
-                    // Mailbox: Overwrite with newest data (guarantees latest data, may skip)
-                    xQueueOverwrite(ctx->display_queue, &display_data);
-                #endif
-                
-                acc_count = 0; // Reset accumulation
+            if (acc_count >= DISPLAY_BLOCK_SIZE)
+            {    
+                ProcessFFT();
+                SendToDisplay(ctx);
             }
         }
     }
 }
-
 
 // Callback called from Acquisition ISR logic
 void Acquisition_ISR_Callback(float32_t sample)
@@ -151,7 +176,6 @@ void Acquisition_ISR_Callback(float32_t sample)
     // Push to FIFO
     fifo_push(&adc_fifo, sample_combined);
 }
-
 
 void SignalProcessing_NotifyFromISR(void)
 {
