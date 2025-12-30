@@ -7,6 +7,23 @@ mx.scratch
 .idea/
 .cache/
 
-#Python files
+# Python files
 __pycache__/
 .venv/
+*.pyc
+
+# Build artifacts (if not in build/)
+*.elf
+*.bin
+*.hex
+*.map
+*.o
+*.d
+*.su
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+
+utils/signal_processing/

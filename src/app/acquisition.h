@@ -13,7 +13,7 @@
 
 #include "adc.h"
 
-#define SAMPLE_SIZE 512 // Total number of samples to acquire 
+#define SAMPLE_SIZE 128 // Total number of samples to acquire 
 #define DMA_BUFFER_SIZE (2*SAMPLE_SIZE) // 2 blocks of samples
 #define ADC_MAX_VALUE 4095.0f // 12-bit ADC  
 #define ADC_REF_VOLTAGE 3.3f  // Reference voltage for ADC
