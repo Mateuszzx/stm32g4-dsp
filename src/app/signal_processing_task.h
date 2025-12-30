@@ -13,6 +13,13 @@
 #include <string.h>
 #include "arm_math.h"
 
+
+#define SINUSOIDAL_TEST_SIGNAL 1
+// Signal and Noise parameters
+#define SIGNAL_FREQ_HZ 20.0f
+#define NOISE_FREQ_HZ 100.0f
+#define SAMPLE_RATE_HZ 1000.0f
+
 /**
  * @brief Signal Processing Task
  * 

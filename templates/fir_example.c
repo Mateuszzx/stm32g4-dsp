@@ -25,7 +25,7 @@ void driver_init(void) {
 
     sine_gen_init_q15(&sine_gen, SAMPLE_RATE, SIGNAL_FREQUENCY);
     sine_gen_init_q15(&noise_gen, SAMPLE_RATE, NOISE_FREQUENCY);
-    lowpass_init();
+    LowpassFIR_Init();
 
 }
 
@@ -35,7 +35,7 @@ void driver_loop(void) {
     noise = sine_calc_sample_q15(&noise_gen)/10;
     disturbed_signal = signal + noise;
     
-    lowpass_filter_execute(&disturbed_signal, &filtered_signal, 1);
+    LowpassFIR_Execute(&disturbed_signal, &filtered_signal, 1);
     printf(">Sample:%d,Sample_filt:%d\r\n", (int)disturbed_signal, (int)filtered_signal);
 
     vTaskDelay(pdMS_TO_TICKS(1));

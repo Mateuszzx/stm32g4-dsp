@@ -11,27 +11,29 @@
 
 #include "signal_processing_task.h"
 #include "driver.h"
-#include "lowpass_iir.h"
 #include "fifo.h"
 #include "task.h"
 #include "fft.h"
 #include "arm_math.h"
 #include "sine_generator.h"
 
-// Signal and Noise parameters
-#define SIGNAL_FREQ_HZ 20.0f
-#define SAMPLE_RATE_HZ 1000.0f
-#define NOISE_FREQ_HZ 70.0f
+// Include selected filter implementations
+#include "lowpass_iir.h"
+// #include "lowpass_fir.h"
+// #include "moving_average.h"
 
+
+#if SINUSOIDAL_TEST_SIGNAL
 static sine_generator_q15_t signal_gen;
 static sine_generator_q15_t noise_gen;
 
 static q15_t signal, noise, combined;
 static float32_t sample_combined;
+#endif
 ////////////////////////////////////
 
 // FIFO parameters
-#define FIFO_SIZE 256
+#define FIFO_SIZE DISPLAY_BLOCK_SIZE
 #define BLOCK_SIZE DSP_BLOCK_SIZE
 
 static float32_t fifo_buffer[FIFO_SIZE];
@@ -57,13 +59,17 @@ static float32_t fft_output_buffer[DISPLAY_BLOCK_SIZE];
 
 void SignalProcessing_Init(void)
 {
-    // Initialize FIFO
-    fifo_init(&adc_fifo, fifo_buffer, FIFO_SIZE);
-    
+#if SINUSOIDAL_TEST_SIGNAL
     // Initialize Sine Generators
     sine_gen_init_q15(&signal_gen, SAMPLE_RATE_HZ, SIGNAL_FREQ_HZ );
     sine_gen_init_q15(&noise_gen, SAMPLE_RATE_HZ, NOISE_FREQ_HZ);
+#endif
 
+    // Initialize FIFO
+    fifo_init(&adc_fifo, fifo_buffer, FIFO_SIZE);
+
+    // Initialize Lowpass FIR Filter
+    // LowpassFIR_Init();
     // Initialize Lowpass IIR Filter
     LowpassIIR_Init();
 
@@ -89,10 +95,30 @@ static void ProcessBlock(void)
     // Pop block from FIFO directly to accumulation buffer
     for (int i = 0; i < BLOCK_SIZE; i++)
     {
+        #if SINUSOIDAL_TEST_SIGNAL
+        float32_t dummy;
+        fifo_pop(&adc_fifo, &dummy); // Consume sample from FIFO to maintain timing
+        
+        // Generate synthetic signal + noise
+        signal = sine_calc_sample_q15(&signal_gen)/2;
+        noise = sine_calc_sample_q15(&noise_gen)/8; // Reduce noise amplitude
+        combined = signal+ noise;
+        
+        arm_q15_to_float(&combined, &sample_combined, 1);
+        display_data.signal_buffer[acc_count + i] = sample_combined;
+        #else
+
         fifo_pop(&adc_fifo, &(display_data.signal_buffer[acc_count + i]));
+        
+        #endif
         display_data.index_buffer[acc_count + i] = index_counter++;
     }
 
+    // Process Block
+    /* FIR*/
+    // LowpassFIR_Execute(&display_data.signal_buffer[acc_count], &display_data.filtered_buffer[acc_count], BLOCK_SIZE);
+    /* Moving Average*/
+    // moving_average(&(display_data.signal_buffer[acc_count]), &(display_data.filtered_buffer[acc_count]), BLOCK_SIZE, 5);
     /* IIR */
     LowpassIIR_Execute(&display_data.signal_buffer[acc_count], &display_data.filtered_buffer[acc_count], BLOCK_SIZE);
     
@@ -106,7 +132,7 @@ static void ProcessBlock(void)
  */
 static void ProcessFFT(void) {
     // 1. Apply Window
-    fft_apply_window(display_data.signal_buffer, &fft_window, fft_input_buffer);
+    fft_apply_window(display_data.filtered_buffer, &fft_window, fft_input_buffer);
     
     // 2. Compute FFT
     fft_compute(&fft_handler, fft_input_buffer, fft_output_buffer);
@@ -166,15 +192,9 @@ void SignalProcessingTask(void *params)
 
 // Callback called from Acquisition ISR logic
 void Acquisition_ISR_Callback(float32_t sample)
-{
-    // Generate synthetic signal + noise
-    signal = sine_calc_sample_q15(&signal_gen)/2;
-    noise = sine_calc_sample_q15(&noise_gen)/2;
-    combined = signal+noise;
-    arm_q15_to_float(&combined, &sample_combined, 1);
-    
+{    
     // Push to FIFO
-    fifo_push(&adc_fifo, sample_combined);
+    fifo_push(&adc_fifo, sample);
 }
 
 void SignalProcessing_NotifyFromISR(void)

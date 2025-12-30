@@ -13,8 +13,6 @@
 #include <math.h>
 
 
-
-
 arm_status fft_init(FFT_Handler* handler, uint16_t fft_size) {
     handler->fft_size = fft_size;
     return arm_rfft_fast_init_f32(&handler->instance, fft_size);
@@ -49,7 +47,7 @@ void fft_calculate_magnitude(FFT_Handler* handler, float32_t* fft_output, float3
     // DC component (Bin 0)
     // Re[0] is at index 0
     magnitude_output[0] = fabsf(fft_output[0]);
-    
+
     // Calculate magnitude for bins 1 to N/2 - 1
     // These are stored as complex pairs starting at index 2
     // Number of such bins is (N/2) - 1

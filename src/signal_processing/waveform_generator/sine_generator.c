@@ -12,7 +12,7 @@
 
 
 
-void sine_gen_init_q15(sine_generator_q15_t *sine, q15_t sample_rate, q15_t frequency)
+void sine_gen_init_q15(sine_generator_q15_t *sine, float32_t sample_rate, float32_t frequency)
 {
     // Calculate normalized frequency
     float32_t y[4];

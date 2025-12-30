@@ -17,9 +17,7 @@
  * 
  */
 #define IIR_NUM_STAGES 3
-static const float32_t lowpass_coeffs[15] = { 0.00000018f, 0.00000035f, 0.00000018f, 1.71607129f, -0.73746234f, 1.00000000f, 2.00000000f, 1.00000000f, 1.77863178f, -0.80080265f, 1.00000000f, 2.00000000f, 1.00000000f, 1.89850942f, -0.92217458f };
-
-
+static const float32_t lowpass_coeffs[15] = { 0.54329774f, 1.08659547f, 0.54329774f, -1.46486819f, -0.54025357f, 1.00000000f, 2.00000000f, 1.00000000f, -1.56101808f, -0.64135154f, 1.00000000f, 2.00000000f, 1.00000000f, -1.76124923f, -0.85188703f };
 
 #define IIR_COEFF_BUFFER_SIZE (5 * IIR_NUM_STAGES) // Each biquad stage has 5 coefficients: b0, b1, b2, -a1, -a2
 IIRFilter_t lowpass_filter;

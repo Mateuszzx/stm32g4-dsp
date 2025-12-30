@@ -19,10 +19,10 @@ class FIRDesignMethods(Enum):
 # FILTER CONFIGURATION
 #######################################################################################
 filter_type = FilterTypes.LOWPASS # Filter type: LOWPASS, HIGHPASS, BANDPASS, BANDSTOP
-fir_type = FIRDesignMethods.FIRLS # Change this to select different FIR design methods   
-numtaps = 31
+fir_type = FIRDesignMethods.FIRWIN # Change this to select different FIR design methods   
+numtaps = 51  # Number of taps (filter order + 1)
 fs = 1000  # Sampling frequency
-cutoff = 50  # Cutoff frequency
+cutoff = 40 # Cutoff frequency
 window = WindowTypes.HAMMING
 transition = 1.0
 #######################################################################################
@@ -119,7 +119,7 @@ if __name__ == "__main__":
         fig, (ax_time, ax_freq) = plt.subplots(2, 1, figsize=(10, 6))
         ax_time.stem(coeffs)
         ax_time.set_title(f"FIR Coefficients ({fir_type.value})")
-        ax_time.set_xlabel("*ctxSample Index")
+        ax_time.set_xlabel("Sample Index")
         ax_time.set_ylabel("Coefficient Value")
         # Frequency Response
         w, h = np.fft.rfftfreq(2048, 1/fs), np.fft.rfft(coeffs, 2048)

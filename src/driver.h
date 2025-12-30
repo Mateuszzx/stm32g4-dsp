@@ -31,7 +31,7 @@
 #define DISPLAY_QUEUE_BLOCKING_MODE 0
 
 #define DSP_BLOCK_SIZE 32
-#define DISPLAY_BLOCK_SIZE (uint32_t)(DMA_BUFFER_SIZE/2)
+#define DISPLAY_BLOCK_SIZE SAMPLE_SIZE
 
 typedef struct {
     uint32_t index_buffer[DISPLAY_BLOCK_SIZE];

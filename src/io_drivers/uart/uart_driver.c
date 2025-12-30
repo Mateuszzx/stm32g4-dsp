@@ -14,7 +14,6 @@
 #include <stdbool.h>
 
 
-#define UART_TX_BUF_SIZE 1024   // Increased buffer size for ring buffer
 
 
 

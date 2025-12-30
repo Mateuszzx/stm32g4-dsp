@@ -16,6 +16,8 @@
 #include "semphr.h"
 
 
+#define UART_TX_BUF_SIZE (4096*4)  // Increased buffer size to hold full display frame
+
 /**
  * @brief Initialize the UART driver.
  * 

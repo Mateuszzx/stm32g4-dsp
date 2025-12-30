@@ -31,7 +31,7 @@ void Acquisition_Init(ADC_HandleTypeDef *hadc)
 static void Process_DMA_Buffer(uint16_t *buffer, uint32_t count)
 {
     for (uint32_t i = 0; i < count; i++) {
-        // Convert to float (-1.0 to 1.0)
+        // Convert to float (0.0 to 3.3)
         float32_t sample = ((float32_t)(buffer[i] & 0xFFF) / ADC_MAX_VALUE) * ADC_REF_VOLTAGE;
         Acquisition_ISR_Callback(sample);
     }

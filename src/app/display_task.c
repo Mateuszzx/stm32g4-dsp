@@ -15,7 +15,7 @@
 #include <string.h>
 
 // Move large buffers to static memory to prevent stack overflow
-static char tx_buf[256];
+static char tx_buf[UART_TX_BUF_SIZE]; // 4KB buffer for UART transmission chunking
 
 
 void DisplayTask(void *params)
@@ -42,13 +42,18 @@ void DisplayTask(void *params)
                 char line_buf[80];
                 float fft_val = (i < DISPLAY_BLOCK_SIZE/2) ? data.fft_buffer[i] : 0.0f;
                 
-                int line_len = snprintf(line_buf, sizeof(line_buf), "%lu,%.4f,%.4f,%.4f\r\n", 
+                int line_len = snprintf(line_buf, sizeof(line_buf), "%lu,%.4f,%.4f,%.2f\r\n", 
                                       data.index_buffer[i], 
                                       data.signal_buffer[i], 
                                       data.filtered_buffer[i],
                                       fft_val);
                 
                 if (line_len <= 0) continue;
+                
+                // Safety clamp to prevent buffer read overflow if snprintf returns > sizeof(line_buf)
+                if (line_len > (int)sizeof(line_buf)) {
+                    line_len = (int)sizeof(line_buf);
+                }
 
                 if (tx_len + line_len >= (int)sizeof(tx_buf)) {
                     UartDriver_Write((uint8_t*)tx_buf, tx_len);
