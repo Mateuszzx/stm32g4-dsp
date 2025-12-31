@@ -24,11 +24,11 @@
 #define TASK_SIGNAL_PROCESSING_STACK_SIZE    1024
 #define TASK_DISPLAY_STACK_SIZE              1024
 
-#define TASK_SIGNAL_PROCESSING_PRIORITY    osPriorityNormal
+#define TASK_SIGNAL_PROCESSING_PRIORITY    osPriorityAboveNormal
 #define TASK_DISPLAY_PRIORITY              osPriorityNormal
 
 // Set to 1 for Blocking Queue (Wait for UART), 0 for Mailbox (Overwrite/Skip)
-#define DISPLAY_QUEUE_BLOCKING_MODE 0
+#define DISPLAY_QUEUE_BLOCKING_MODE 1
 
 #define DSP_BLOCK_SIZE 32
 #define DISPLAY_BLOCK_SIZE SAMPLE_SIZE

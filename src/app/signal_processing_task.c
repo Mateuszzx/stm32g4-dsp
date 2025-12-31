@@ -33,7 +33,7 @@ static float32_t sample_combined;
 ////////////////////////////////////
 
 // FIFO parameters
-#define FIFO_SIZE DISPLAY_BLOCK_SIZE
+#define FIFO_SIZE (DISPLAY_BLOCK_SIZE * 4)
 #define BLOCK_SIZE DSP_BLOCK_SIZE
 
 static float32_t fifo_buffer[FIFO_SIZE];

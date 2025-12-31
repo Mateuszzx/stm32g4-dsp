@@ -14,7 +14,7 @@
 #include "arm_math.h"
 
 
-#define SINUSOIDAL_TEST_SIGNAL 1
+#define SINUSOIDAL_TEST_SIGNAL 0
 // Signal and Noise parameters
 #define SIGNAL_FREQ_HZ 20.0f
 #define NOISE_FREQ_HZ 100.0f
