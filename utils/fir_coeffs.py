@@ -1,3 +1,7 @@
+"""
+FIR filter coefficient generation and visualization.
+"""
+
 from enum import Enum
 import numpy as np
 from numpy.typing import NDArray
@@ -28,8 +32,10 @@ transition = 1.0
 #######################################################################################
 
 #######################################################################################
+# FIR DESIGN REGISTRY
 fir_registry = {}
 
+# Decorator to register FIR design functions
 def register_fir(method_enum):
     def decorator(func):
         fir_registry[method_enum] = func
@@ -77,6 +83,8 @@ def remez_design(numtaps, cutoff, fs, window=None, filter_type=FilterTypes.LOWPA
 
 @register_fir(FIRDesignMethods.SAVGOL)
 def savgol_design(numtaps, cutoff, fs, window=None, filter_type=FilterTypes.LOWPASS, **kwargs) -> NDArray:
+    """Design FIR filter using the savgol method."""
+
     if filter_type != FilterTypes.LOWPASS:
         raise ValueError("SAVGOL supports only LOWPASS-like smoothing in this design wrapper.")
     window_length = numtaps if numtaps % 2 != 0 else numtaps + 1
@@ -91,6 +99,8 @@ def fir_coeffs(fir_type: FIRDesignMethods,
                 window=WindowTypes.HAMMING,
                 filter_type=FilterTypes.LOWPASS,
                 transition: float = 100.0) -> NDArray:
+    """Generate FIR filter coefficients using the specified design method."""
+    
     if fir_type in fir_registry:
         return fir_registry[fir_type](numtaps, cutoff, fs, window=window.value, filter_type=filter_type, transition=transition)
     else:

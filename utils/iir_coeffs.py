@@ -1,6 +1,8 @@
+"""
+IIR filter coefficient generation and visualization.
+"""
 from enum import Enum
 import numpy as np
-from numpy.typing import NDArray
 from scipy.signal import iirfilter, sosfreqz, freqz
 
 from tools.filter_types import FilterTypes, _validate_cutoff
@@ -41,7 +43,27 @@ def iir_design(method: IIRDesignMethods,
                rp: float = 1.0,
                rs: float = 40.0,
                output: IIROutputFormat = IIROutputFormat.SOS):
-    
+    """
+    Design IIR filter and return coefficients.
+
+    :param method: Design method
+    :type method: IIRDesignMethods
+    :param order: Filter order
+    :type order: int
+    :param cutoff: Cutoff frequency or frequencies
+    :type cutoff: float | tuple[float, float]
+    :param fs: Sampling frequency
+    :type fs: float
+    :param filter_type: Filter type
+    :type filter_type: FilterTypes
+    :param rp: Passband ripple in dB (for cheby1, ellip)
+    :type rp: float
+    :param rs: Stopband attenuation in dB (for cheby2, ellip)
+    :type rs: float
+    :param output: Output format
+    :type output: IIROutputFormat
+    """
+
     # Validate and get cutoff in Hz
     nyq = 0.5 * fs
     c = _validate_cutoff(filter_type, cutoff, nyq)
@@ -54,6 +76,7 @@ def iir_design(method: IIRDesignMethods,
 
     return iirfilter(N=order, Wn=Wn, rp=rp, rs=rs, btype=filter_type.value, 
                      analog=False, ftype=method.value, output=output.value)
+
 
 
 if __name__ == "__main__":

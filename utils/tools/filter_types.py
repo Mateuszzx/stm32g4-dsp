@@ -3,23 +3,33 @@ from enum import Enum
 from dataclasses import dataclass
 
 class FilterTypes(Enum):
+    """
+    Enumeration of common filter types.
+    """
     LOWPASS = "lowpass"
     HIGHPASS = "highpass"
     BANDPASS = "bandpass"
     BANDSTOP = "bandstop"
 
 class WindowTypes(Enum):
+    """
+    Enumeration of common window types.
+    """
     HAMMING = "hamming"
     HANN = "hann"
     BLACKMAN = "blackman"
     BARTLETT = "bartlett"
 
-
+# Type aliases
 Number = int | float
 Cutoff = Number | tuple[Number, Number]
 
+
 @dataclass(frozen=True)
 class BandSpec:
+    """
+    Specification for filter bands used in FIR design methods.
+    """
     # For firwin2 / firls (piecewise-linear amplitude): breakpoints + gain at each breakpoint
     freq_breaks: list[float]
     gain_at_breaks: list[float]
@@ -30,9 +40,34 @@ class BandSpec:
 
 
 def _clamp(x: float, lo: float, hi: float) -> float:
+    """
+    clamp x to [lo, hi]
+
+    :param x: Value to clamp
+    :type x: float
+    :param lo: Lower bound
+    :type lo: float
+    :param hi: Upper bound
+    :type hi: float
+    :return: Clamped value
+    :rtype: float
+    """
     return max(lo, min(hi, x))
 
+
 def _validate_cutoff(filter_type, cutoff: Cutoff, nyq: float) -> tuple[float, float] | float:
+    """
+    Validate cutoff frequencies based on filter type and Nyquist frequency.
+    
+    :param filter_type: Filter type
+    :param cutoff: Cutoff frequency or frequencies
+    :type cutoff: Cutoff
+    :param nyq: Nyquist frequency
+    :type nyq: float
+    :return: Validated cutoff frequency or frequencies
+    :rtype: tuple[float, float] | float
+    """
+
     if filter_type in (FilterTypes.LOWPASS, FilterTypes.HIGHPASS):
         if isinstance(cutoff, (tuple, list)):
             raise ValueError(f"{filter_type.value}: cutoff must be scalar Hz, got {cutoff}")
@@ -49,13 +84,30 @@ def _validate_cutoff(filter_type, cutoff: Cutoff, nyq: float) -> tuple[float, fl
         raise ValueError(f"{filter_type.value}: require 0 < f1 < f2 < nyq, got {(f1, f2)} (nyq={nyq})")
     return (f1, f2)
 
+
 def build_band_spec(
-    *,
-    filter_type: FilterTypes,
-    cutoff: Cutoff,
-    fs: float,
-    transition: float = 1000.0,
-) -> BandSpec:
+        *,
+        filter_type: FilterTypes,
+        cutoff: Cutoff,
+        fs: float,
+        transition: float = 1000.0,
+    ) -> BandSpec:
+
+    """
+    Build band specification for FIR filter design based on filter type and cutoff frequencies.
+   
+    :param filter_type: Filter type
+    :type filter_type: FilterTypes
+    :param cutoff: Cutoff frequency or frequencies
+    :type cutoff: Cutoff
+    :param fs: Sampling frequency
+    :type fs: float
+    :param transition: Transition width in Hz
+    :type transition: float
+    :return: Band specification for FIR filter design
+    :rtype: BandSpec
+    """
+
     nyq = fs / 2.0
     tw = float(transition)
     if tw <= 0:
