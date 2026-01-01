@@ -30,31 +30,6 @@ This project implements Digital Signal Processing (DSP) algorithms with CMSIS-DS
 - **Build Tools**: CMake, Make or Ninja
 - **Hardware**: STM32G4 Development Board (e.g., Nucleo-G491RE)
 
-## Build Instructions
-
-1.  **Clone the repository**:
-    ```bash
-    git clone <repository_url>
-    cd stm32g4-dsp
-    ```
-
-2.  **Create a build directory**:
-    ```bash
-    mkdir build
-    cd build
-    ```
-
-3.  **Configure the project**:
-    ```bash
-    cmake ..
-    ```
-    *Note: You may need to specify the toolchain file if it's not automatically detected, although the project includes `cmake/gcc-arm-none-eabi.cmake`.*
-
-4.  **Build**:
-    ```bash
-    make -j4
-    ```
-
 ## Usage
 
 The application is divided into tasks:
